@@ -8,8 +8,29 @@
 import SwiftUI
 
 struct ContentView: View {
-    let emojis: Array<String> = ["🥲","🤔","🙄","🤣","🥹","🥳","🤩"]
+//    let emojis: Array<String> = ["🥲","🤔","🙄","🤣","🥹","🥳","🤩"]
+//    let vehicles: Array<String> = ["🚗", "🚘", "🚙", "🚚", "🚛", "⛴️", "✈️"]
     @State var cardCount: Int = 6
+    @State private var currentTheme: Theme = .emojis
+    
+    enum Theme: CaseIterable {
+        case emojis
+        case vehicles
+        case halloween
+        
+        var images: [String] {
+            switch self {
+            case .emojis:
+                return ["😀", "😃", "😄", "😁", "😆", "😅", "😂"]
+            case .vehicles:
+                return ["🚗", "🚘", "🚙", "🚚", "🚛", "⛴️", "✈️"]
+            case .halloween:
+                return ["😈", "🎃","🧙","🍬","🕸️","🍁","👻"]
+            }
+        }
+    }
+    
+    
     var body: some View {
         VStack{
             Text("Memorize")
@@ -26,7 +47,7 @@ struct ContentView: View {
         LazyVGrid(columns: [GridItem(.adaptive(minimum: 80))])
         {
             ForEach(0..<cardCount,id: \.self) { index in
-                CardView(content:emojis[index])
+                CardView(content:currentTheme.images[index % currentTheme.images.count])
                     .aspectRatio(2/3, contentMode: .fit)
             }
         }
@@ -35,28 +56,54 @@ struct ContentView: View {
     
     var cardCountAdjusters: some View {
         HStack{
-            cardAdder
+//            cardAdder
+//            Spacer()
+//            cardRemover
+            facesTheme
             Spacer()
-            cardRemover
+            vehiclesTheme
+            Spacer()
+            halloweenTheme
         }
         .imageScale(.large)
         .font(.largeTitle)
     }
-    
-    func cardCountAdjuster (by offset: Int, symbol: String) -> some View {
+    func cardThemeAdjuster (for theme: Theme, symbol: String, label: String) -> some View {
         Button(action: {
-            cardCount += offset
-        }, label: {
-            Image(systemName: symbol)
-        })
-        .disabled(cardCount + offset < 1 || cardCount + offset >  emojis.count)
+            currentTheme = theme
+        }) {
+            VStack{
+                Image(systemName: symbol)
+                Text(label)
+                    .font(.caption)
+                    .aspectRatio(1 ,contentMode: .fit)
+            }
+        }
     }
-    var cardRemover: some View{
-        cardCountAdjuster(by: -1, symbol: "rectangle.stack.badge.minus.fill")
+    var facesTheme: some View{
+            cardThemeAdjuster(for: .emojis, symbol: "person", label: "Emojis")
     }
-    var cardAdder: some View {
-        cardCountAdjuster(by: +1, symbol: "rectangle.stack.badge.plus.fill")
+    var vehiclesTheme: some View{
+            cardThemeAdjuster(for: .vehicles, symbol: "car", label: "Vehicles")
     }
+    var halloweenTheme: some View{
+            cardThemeAdjuster(for: .halloween, symbol: "bolt.fill", label: "Halloween")
+    }
+    
+//    func cardCountAdjuster (by offset: Int, symbol: String) -> some View {
+//        Button(action: {
+//            cardCount += offset
+//        }, label: {
+//            Image(systemName: symbol)
+//        })
+//        .disabled(cardCount + offset < 1 || cardCount + offset >  emojis.count)
+//    }
+//    var cardRemover: some View{
+//        cardCountAdjuster(by: -1, symbol: "rectangle.stack.badge.minus.fill")
+//    }
+//    var cardAdder: some View {
+//        cardCountAdjuster(by: +1, symbol: "rectangle.stack.badge.plus.fill")
+//    }
 }
 struct CardView: View {
     let content:String
