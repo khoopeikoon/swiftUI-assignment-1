@@ -9,9 +9,12 @@ import SwiftUI
 
 struct ContentView: View {
     let emojis: Array<String> = ["🥲","🤔","🙄","🤣","🥹","🥳","🤩"]
-    @State var cardCount: Int = 4
+    @State var cardCount: Int = 6
     var body: some View {
         VStack{
+            Text("Memorize")
+                .font(.system(size: 70))
+                .aspectRatio(1, contentMode: .fit)
             ScrollView{
                 cards
             }
@@ -20,7 +23,7 @@ struct ContentView: View {
         .padding()
     }
     var cards: some View {
-        LazyVGrid(columns: [GridItem(.adaptive(minimum: 120))])
+        LazyVGrid(columns: [GridItem(.adaptive(minimum: 80))])
         {
             ForEach(0..<cardCount,id: \.self) { index in
                 CardView(content:emojis[index])
